@@ -1,0 +1,23 @@
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.slnx.sqlite
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+*.wsuo
+DocumentLayout.json
+VSWorkspaceState.json
+
+# =========================
+# Copilot Indexes
+# =========================
+CopilotIndices/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
