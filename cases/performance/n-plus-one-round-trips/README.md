@@ -1,125 +1,111 @@
-﻿# Caso: N+1, Round-Trips Excessivos e Materialização Precoce
+﻿# Caso: N+1, round-trips excessivos e materialização precoce
 
-Este caso demonstra três problemas comuns encontrados em aplicações .NET
-que acessam banco de dados:
+Este caso demonstra três problemas comuns em aplicações .NET que acessam
+banco de dados:
 
--   N+1 Queries
--   Round-trips excessivos ao banco
--   Materialização precoce (uso inadequado de ToList)
+-   N+1 queries
+-   round-trips excessivos ao banco
+-   materialização precoce (uso inadequado de `ToList()`)
 
-O objetivo é mostrar o impacto dessas decisões e como corrigi-las de
-forma prática e mensurável.
-
-------------------------------------------------------------------------
+O objetivo é mostrar o impacto dessas decisões e como corrigir o fluxo
+de acesso a dados de forma prática e mensurável.
 
 ## Contexto
 
 Durante a análise de um processo real, foi identificado um tempo
-excessivo de execução ao gerar relatórios com comparação entre bancos
-distintos.
+excessivo de execução ao gerar relatórios com comparação entre bases
+distintas.
 
-Na primeira execução:
+Primeira execução:
 
 -   1.740 registros processados
 -   310 segundos de execução
--   Média de 5,6 segundos por registro
+-   média de 5,6 segundos por registro
 
 Após otimização:
 
--   Mesmo volume de registros
+-   mesmo volume de registros
 -   47 segundos de execução total
--   Aproximadamente 37 registros por segundo
+-   aproximadamente 37 registros por segundo
 
 Redução aproximada de 84% no tempo total.
 
-------------------------------------------------------------------------
+## Problemas identificados
 
-## Problemas Identificados
-
-### 1️º N+1 Queries
+### 1. N+1 queries
 
 Execução de uma consulta principal seguida de múltiplas consultas
 adicionais dentro de loops.
 
-Sintoma comum: - Alto número de queries no log - Crescimento exponencial
-do tempo de execução
+Sinais comuns:
 
-------------------------------------------------------------------------
+-   alto número de queries no log
+-   aumento significativo do tempo total conforme o volume cresce
 
-### 2️º Round-Trips Excessivos
+### 2. Round-trips excessivos
 
 Chamadas repetidas ao banco de dados quando os dados poderiam ser
 consolidados em uma única consulta.
 
-Impacto: - Latência acumulada - Sobrecarga desnecessária no banco
+Impactos típicos:
 
-------------------------------------------------------------------------
+-   latência acumulada
+-   sobrecarga desnecessária no banco
 
-### 3️º Materialização Precoce
+### 3. Materialização precoce
 
-Uso de `.ToList()` antes do momento necessário, forçando a execução da
+Uso de `ToList()` antes do momento necessário, forçando a execução da
 consulta e carregando dados em memória prematuramente.
 
-Problemas causados: - Consumo excessivo de memória - Perda de otimização
-no banco - Filtros aplicados em memória ao invés de no SQL
+Problemas causados:
 
-------------------------------------------------------------------------
+-   consumo desnecessário de memória
+-   perda de otimizações do banco (por exemplo, filtros aplicados em
+    memória)
+-   execução antecipada que dificulta composição de query
 
-## Estrutura do Caso
+## Estrutura do caso
 
 Este caso será dividido em duas abordagens:
 
 ### Versão Bad
 
--   Implementação com N+1
--   Múltiplos round-trips
--   Uso inadequado de ToList()
--   Filtros aplicados em memória
-
-------------------------------------------------------------------------
+-   implementação com N+1
+-   múltiplos round-trips
+-   uso inadequado de `ToList()`
+-   filtros aplicados em memória
 
 ### Versão Good
 
--   Consulta consolidada
--   Redução de round-trips
--   Uso adequado de Any() ao invés de Count() \> 0
--   Materialização apenas no momento necessário
--   Filtros aplicados diretamente na query
+-   consulta consolidada (redução de round-trips)
+-   uso adequado de `Any()` em cenários de existência (quando aplicável)
+-   materialização somente no momento necessário
+-   filtros aplicados diretamente na query
 
-------------------------------------------------------------------------
-
-## Objetivo Técnico
+## Objetivo técnico
 
 Demonstrar que:
 
--   O problema raramente está apenas na infraestrutura
--   Pequenas decisões no código impactam fortemente performance
--   Métricas são essenciais para validar melhorias
--   Otimização começa pela análise, não pelo chute
+-   gargalos de performance frequentemente estão na forma como os dados
+    são acessados
+-   pequenas decisões no código podem ter grande impacto em tempo total
+    e latência
+-   métricas e logs são necessários para validar a melhoria
 
-------------------------------------------------------------------------
+## Como executar
 
-## Como Executar
+A forma de execução será definida após a implementação do código
+(console ou API).
 
-(Será definido após implementação do código)
+## Conceitos relacionados
 
-------------------------------------------------------------------------
-
-## Conceitos Relacionados
-
--   IQueryable vs IEnumerable
--   Execução adiada (Deferred Execution)
--   Any() vs Count()
--   Otimização de consultas SQL
--   Redução de latência em acesso a dados
-
-------------------------------------------------------------------------
+-   `IQueryable` vs `IEnumerable`
+-   execução adiada (deferred execution)
+-   `Any()` vs `Count()`
+-   otimização de consultas SQL
+-   redução de latência no acesso a dados
 
 ## Observação
 
-Este caso faz parte do laboratório público dotnet-playground e está
-diretamente relacionado aos conteúdos técnicos publicados no LinkedIn,
-onde teoria e prática são conectadas através de exemplos reais e
-reproduzíveis.
-
-------------------------------------------------------------------------
+Este caso faz parte do repositório `dotnet-playground` e será evoluído
+conforme novos exemplos forem adicionados.
