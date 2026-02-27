@@ -21,3 +21,18 @@ CopilotIndices/
 # =========================
 .DS_Store
 Thumbs.db
+
+# =========================
+# Build folders
+# =========================
+bin/
+obj/
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+project.assets.json
+*.nuget.props
+*.nuget.targets
+*.nuget.cache
