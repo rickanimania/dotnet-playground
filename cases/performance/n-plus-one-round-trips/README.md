@@ -1,111 +1,83 @@
-﻿# Caso: N+1, round-trips excessivos e materialização precoce
+﻿# N+1 e Round Trips
 
-Este caso demonstra três problemas comuns em aplicações .NET que acessam
-banco de dados:
+Este caso demonstra, de forma controlada e reproduzível, o impacto do padrão N+1 e do excesso de round-trips em operações de acesso a dados.
 
--   N+1 queries
--   round-trips excessivos ao banco
--   materialização precoce (uso inadequado de `ToList()`)
+A implementação é dividida em dois cenários:
 
-O objetivo é mostrar o impacto dessas decisões e como corrigir o fluxo
-de acesso a dados de forma prática e mensurável.
+- Bad: simula materialização precoce e consultas item a item (N+1).
+- Good: reduz chamadas desnecessárias e executa apenas uma consulta principal.
 
-## Contexto
+O objetivo é evidenciar a diferença de tempo de execução entre as duas abordagens.
 
-Durante a análise de um processo real, foi identificado um tempo
-excessivo de execução ao gerar relatórios com comparação entre bases
-distintas.
+---
 
-Primeira execução:
+## Estrutura
 
--   1.740 registros processados
--   310 segundos de execução
--   média de 5,6 segundos por registro
+O caso está organizado da seguinte forma:
 
-Após otimização:
+src/
+  NPlusOneRoundTrips.Core/
+    - Simulador de acesso a dados
+    - Cenários Bad e Good
+    - Runner de execução
+  NPlusOneRoundTrips.Console/
+    - Aplicação Console
+    - Classe de apresentação (ConsoleReportPrinter)
 
--   mesmo volume de registros
--   47 segundos de execução total
--   aproximadamente 37 registros por segundo
+O projeto Core não depende do Console, permitindo futura reutilização em uma API.
 
-Redução aproximada de 84% no tempo total.
-
-## Problemas identificados
-
-### 1. N+1 queries
-
-Execução de uma consulta principal seguida de múltiplas consultas
-adicionais dentro de loops.
-
-Sinais comuns:
-
--   alto número de queries no log
--   aumento significativo do tempo total conforme o volume cresce
-
-### 2. Round-trips excessivos
-
-Chamadas repetidas ao banco de dados quando os dados poderiam ser
-consolidados em uma única consulta.
-
-Impactos típicos:
-
--   latência acumulada
--   sobrecarga desnecessária no banco
-
-### 3. Materialização precoce
-
-Uso de `ToList()` antes do momento necessário, forçando a execução da
-consulta e carregando dados em memória prematuramente.
-
-Problemas causados:
-
--   consumo desnecessário de memória
--   perda de otimizações do banco (por exemplo, filtros aplicados em
-    memória)
--   execução antecipada que dificulta composição de query
-
-## Estrutura do caso
-
-Este caso será dividido em duas abordagens:
-
-### Versão Bad
-
--   implementação com N+1
--   múltiplos round-trips
--   uso inadequado de `ToList()`
--   filtros aplicados em memória
-
-### Versão Good
-
--   consulta consolidada (redução de round-trips)
--   uso adequado de `Any()` em cenários de existência (quando aplicável)
--   materialização somente no momento necessário
--   filtros aplicados diretamente na query
-
-## Objetivo técnico
-
-Demonstrar que:
-
--   gargalos de performance frequentemente estão na forma como os dados
-    são acessados
--   pequenas decisões no código podem ter grande impacto em tempo total
-    e latência
--   métricas e logs são necessários para validar a melhoria
+---
 
 ## Como executar
 
-A forma de execução será definida após a implementação do código
-(console ou API).
+Pré-requisitos:
+- .NET 8 SDK instalado
 
-## Conceitos relacionados
+Via Visual Studio:
+1. Defina NPlusOneRoundTrips.Console como Startup Project.
+2. Execute a aplicação.
 
--   `IQueryable` vs `IEnumerable`
--   execução adiada (deferred execution)
--   `Any()` vs `Count()`
--   otimização de consultas SQL
--   redução de latência no acesso a dados
+Via CLI (opcional):
+dotnet run --project src/NPlusOneRoundTrips.Console
 
-## Observação
+---
 
-Este caso faz parte do repositório `dotnet-playground` e será evoluído
-conforme novos exemplos forem adicionados.
+## Configuração
+
+No arquivo Program.cs é possível ajustar:
+
+- totalRecords: quantidade de registros simulados.
+
+Exemplo:
+
+const int totalRecords = 100;
+
+Quanto maior o número de registros, maior será o impacto do cenário Bad.
+
+---
+
+## Saída esperada
+
+A aplicação exibe uma tabela comparando:
+
+- Nome do cenário
+- Quantidade de registros
+- Tempo de execução em milissegundos
+
+Ao final, é exibido um resumo com:
+
+- Fator de velocidade entre Good e Bad
+- Percentual aproximado de redução
+
+---
+
+## Objetivo técnico
+
+Este caso serve como material de apoio para:
+
+- Discussão sobre N+1
+- Impacto de múltiplos round-trips
+- Materialização precoce (ToList mal posicionado)
+- Comparação prática entre abordagens
+
+Trata-se de uma simulação conceitual. Em versões futuras, pode ser expandido para uso com banco real (ex: SQLite) para análise mais próxima de cenários de produção.
