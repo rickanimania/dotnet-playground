@@ -2,12 +2,10 @@
 # Visual Studio
 # =========================
 .vs/
-*.slnx.sqlite
-*.sqlite
-*.db
-*.db-shm
-*.db-wal
-*.wsuo
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 DocumentLayout.json
 VSWorkspaceState.json
 
@@ -36,3 +34,10 @@ project.assets.json
 *.nuget.props
 *.nuget.targets
 *.nuget.cache
+
+# =========================
+# SQLite local databases
+# =========================
+*.db
+*.db-shm
+*.db-wal

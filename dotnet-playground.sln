@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Core", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Console", "cases\performance\n-plus-one-round-trips\src\NPlusOneRoundTrips.Console\NPlusOneRoundTrips.Console.csproj", "{6D65B7C3-968A-44CC-AA58-1B2F9B0083F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Infrastructure.Sqlite", "cases\performance\n-plus-one-round-trips\src\NPlusOneRoundTrips.Infrastructure.Sqlite\NPlusOneRoundTrips.Infrastructure.Sqlite.csproj", "{C81ECF48-3AE8-446F-AB97-815651C3D848}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{6D65B7C3-968A-44CC-AA58-1B2F9B0083F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D65B7C3-968A-44CC-AA58-1B2F9B0083F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D65B7C3-968A-44CC-AA58-1B2F9B0083F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C81ECF48-3AE8-446F-AB97-815651C3D848}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C81ECF48-3AE8-446F-AB97-815651C3D848}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C81ECF48-3AE8-446F-AB97-815651C3D848}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C81ECF48-3AE8-446F-AB97-815651C3D848}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{11E72AF9-EF87-4647-8596-81B6A2C2C079} = {6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890}
 		{6D65B7C3-968A-44CC-AA58-1B2F9B0083F7} = {6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890}
+		{C81ECF48-3AE8-446F-AB97-815651C3D848} = {6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0959BE1-0128-48E5-864F-42529A1AA4DE}
