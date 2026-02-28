@@ -3,6 +3,7 @@ using NPlusOneRoundTrips.Core.Services;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.Database;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.DataSources;
 using NPlusOneRoundTrips.Console.Configuration;
+using DotnetPlayground.Common.ConsoleUI;
 
 
 const RunMode mode = RunMode.Demo;
@@ -16,7 +17,9 @@ var inMemoryRunner = new ScenarioRunner(inMemoryDataSource);
 var inMemoryBad = inMemoryRunner.RunBad();
 var inMemoryGood = inMemoryRunner.RunGood();
 
-ConsoleReportPrinter.PrintHeader($"INMEMORY (delay {inMemoryDelayMs}ms) - N+1 e Round Trips");
+ConsoleShell.PrintHeader("Comparacao de N+1 e round-trips utilizando simulacao em memoria e SQLite com Dapper.");
+
+ConsoleReportPrinter.PrintHeader($"==== INMEMORY (delay {inMemoryDelayMs}ms) - N+1 e Round Trips");
 ConsoleReportPrinter.PrintRow(inMemoryBad);
 ConsoleReportPrinter.PrintRow(inMemoryGood);
 ConsoleReportPrinter.PrintSummary(inMemoryBad, inMemoryGood);
@@ -31,7 +34,7 @@ var sqliteRunner = new ScenarioRunner(sqliteDataSource);
 var sqliteBad = sqliteRunner.RunBad();
 var sqliteGood = sqliteRunner.RunGood();
 
-ConsoleReportPrinter.PrintHeader("SQLITE (DAPPER) - N+1 e Round Trips");
+ConsoleReportPrinter.PrintHeader("==== SQLITE (DAPPER) - N+1 e Round Trips");
 ConsoleReportPrinter.PrintRow(sqliteBad);
 ConsoleReportPrinter.PrintRow(sqliteGood);
 ConsoleReportPrinter.PrintSummary(sqliteBad, sqliteGood);

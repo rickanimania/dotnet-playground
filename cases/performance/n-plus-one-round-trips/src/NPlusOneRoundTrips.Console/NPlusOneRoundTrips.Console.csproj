@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\shared\common\DotnetPlayground.Common\DotnetPlayground.Common.csproj" />
     <ProjectReference Include="..\NPlusOneRoundTrips.Core\NPlusOneRoundTrips.Core.csproj" />
     <ProjectReference Include="..\NPlusOneRoundTrips.Infrastructure.Sqlite\NPlusOneRoundTrips.Infrastructure.Sqlite.csproj" />
   </ItemGroup>
