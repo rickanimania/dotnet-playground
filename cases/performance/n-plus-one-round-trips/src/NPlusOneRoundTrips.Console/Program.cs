@@ -1,18 +1,38 @@
-﻿using NPlusOneRoundTrips.Core.Services;
-using NPlusOneRoundTrips.Console.Presentation;
+﻿using NPlusOneRoundTrips.Console.Presentation;
+using NPlusOneRoundTrips.Core.Services;
+using NPlusOneRoundTrips.Infrastructure.Sqlite.Database;
+using NPlusOneRoundTrips.Infrastructure.Sqlite.DataSources;
 
-const int totalRecords = 100;
+const int totalRecords = 500;
 
-var runner = new ScenarioRunner(totalRecords);
+// Para volumes altos, nao simule delay alto
+var inMemoryRoundTripDelayMs = totalRecords <= 500 ? 2 : 0;
 
-var bad = runner.RunBad();
-var good = runner.RunGood();
+// InMemory
+var inMemoryDataSource = new DataAccessSimulator(totalRecords, inMemoryRoundTripDelayMs);
+var inMemoryRunner = new ScenarioRunner(inMemoryDataSource);
 
-ConsoleReportPrinter.PrintHeader("DOTNET-PLAYGROUND - Cenario conceitual de N+1 e Round Trips");
+var inMemoryBad = inMemoryRunner.RunBad();
+var inMemoryGood = inMemoryRunner.RunGood();
 
-ConsoleReportPrinter.PrintRow(bad);
-ConsoleReportPrinter.PrintRow(good);
+ConsoleReportPrinter.PrintHeader($"INMEMORY (delay {inMemoryRoundTripDelayMs}ms) - N+1 e Round Trips");
+ConsoleReportPrinter.PrintRow(inMemoryBad);
+ConsoleReportPrinter.PrintRow(inMemoryGood);
+ConsoleReportPrinter.PrintSummary(inMemoryBad, inMemoryGood);
 
-ConsoleReportPrinter.PrintSummary(bad, good);
+System.Console.WriteLine();
+
+// SQLite
+var dbPath = SqliteDatabaseFactory.GetDatabasePath("nplusone-roundtrips.db");
+var sqliteDataSource = new SqliteRecordDataSource(dbPath, totalRecords);
+var sqliteRunner = new ScenarioRunner(sqliteDataSource);
+
+var sqliteBad = sqliteRunner.RunBad();
+var sqliteGood = sqliteRunner.RunGood();
+
+ConsoleReportPrinter.PrintHeader("SQLITE (DAPPER) - N+1 e Round Trips");
+ConsoleReportPrinter.PrintRow(sqliteBad);
+ConsoleReportPrinter.PrintRow(sqliteGood);
+ConsoleReportPrinter.PrintSummary(sqliteBad, sqliteGood);
 
 ConsoleReportPrinter.WaitForExit();

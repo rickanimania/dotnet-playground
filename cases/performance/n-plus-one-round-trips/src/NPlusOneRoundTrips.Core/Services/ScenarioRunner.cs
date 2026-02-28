@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using NPlusOneRoundTrips.Core.Abstractions;
 using NPlusOneRoundTrips.Core.Diagnostics;
 using NPlusOneRoundTrips.Core.Services.Scenarios;
 
@@ -6,17 +7,16 @@ namespace NPlusOneRoundTrips.Core.Services;
 
 public sealed class ScenarioRunner
 {
-    private readonly int _totalRecords;
+    private readonly IRecordDataSource _dataSource;
 
-    public ScenarioRunner(int totalRecords)
+    public ScenarioRunner(IRecordDataSource dataSource)
     {
-        _totalRecords = totalRecords;
+        _dataSource = dataSource;
     }
 
     public ScenarioRunResult RunBad()
     {
-        var dataAccess = new DataAccessSimulator(_totalRecords);
-        var scenario = new BadScenario(dataAccess);
+        var scenario = new BadScenario(_dataSource);
 
         var sw = Stopwatch.StartNew();
         var result = scenario.Execute();
@@ -26,14 +26,13 @@ public sealed class ScenarioRunner
         {
             ScenarioName = "Bad",
             TotalRecords = result.Count,
-            ElapsedMilliseconds = sw.ElapsedMilliseconds
+            ElapsedTicks = sw.ElapsedTicks
         };
     }
 
     public ScenarioRunResult RunGood()
     {
-        var dataAccess = new DataAccessSimulator(_totalRecords);
-        var scenario = new GoodScenario(dataAccess);
+        var scenario = new GoodScenario(_dataSource);
 
         var sw = Stopwatch.StartNew();
         var result = scenario.Execute();
@@ -43,7 +42,7 @@ public sealed class ScenarioRunner
         {
             ScenarioName = "Good",
             TotalRecords = result.Count,
-            ElapsedMilliseconds = sw.ElapsedMilliseconds
+            ElapsedTicks = sw.ElapsedTicks
         };
     }
 }
