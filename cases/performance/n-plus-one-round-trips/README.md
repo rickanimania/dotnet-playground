@@ -56,6 +56,28 @@ Quanto maior o número de registros, maior será o impacto do cenário Bad.
 
 ---
 
+## Modos recomendados
+
+Este caso possui dois modos de execucao sugeridos, configurados no Program.cs.
+
+### Demo
+Indicado para demonstracao rapida e visual.
+
+- totalRecords: 500
+- inMemoryDelayMs: 2
+
+Neste modo, a latencia simulada evidencia o custo do N+1 no cenario Bad.
+
+### Stress
+Indicado para executar com volume maior sem tornar a simulacao lenta.
+
+- totalRecords: 10000
+- inMemoryDelayMs: 0
+
+Neste modo, o foco eh comparar round-trips reais no SQLite (Bad com varias consultas vs Good com consulta unica).
+
+---
+
 ## Saída esperada
 
 A aplicação exibe uma tabela comparando:
@@ -69,7 +91,18 @@ Ao final, é exibido um resumo com:
 - Fator de velocidade entre Good e Bad
 - Percentual aproximado de redução
 
+## Observacao sobre o modo InMemory
+
+O modo InMemory utiliza uma simulacao de round-trip atraves de um delay configuravel (inMemoryDelayMs).
+
+- Com delay > 0, o custo de multiplas chamadas (N+1) fica evidente no tempo total.
+- Com delay = 0, o custo do N+1 em memoria tende a ser pequeno, pois nao existe rede, disco ou parse de resultados, e as operacoes sao apenas loops e buscas em colecao.
+
+O objetivo do InMemory eh permitir uma demonstracao controlada do efeito de round-trips.
+Ja o modo SQLite executa consultas reais, aproximando o caso de um cenario do dia a dia.
+
 ---
+
 
 ## Objetivo técnico
 

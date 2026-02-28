@@ -2,20 +2,21 @@
 using NPlusOneRoundTrips.Core.Services;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.Database;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.DataSources;
+using NPlusOneRoundTrips.Console.Configuration;
 
-const int totalRecords = 500;
 
-// Para volumes altos, nao simule delay alto
-var inMemoryRoundTripDelayMs = totalRecords <= 500 ? 2 : 0;
+const RunMode mode = RunMode.Demo;
+
+var (totalRecords, inMemoryDelayMs) = RunConfiguration.GetConfig(mode);
 
 // InMemory
-var inMemoryDataSource = new DataAccessSimulator(totalRecords, inMemoryRoundTripDelayMs);
+var inMemoryDataSource = new DataAccessSimulator(totalRecords, inMemoryDelayMs);
 var inMemoryRunner = new ScenarioRunner(inMemoryDataSource);
 
 var inMemoryBad = inMemoryRunner.RunBad();
 var inMemoryGood = inMemoryRunner.RunGood();
 
-ConsoleReportPrinter.PrintHeader($"INMEMORY (delay {inMemoryRoundTripDelayMs}ms) - N+1 e Round Trips");
+ConsoleReportPrinter.PrintHeader($"INMEMORY (delay {inMemoryDelayMs}ms) - N+1 e Round Trips");
 ConsoleReportPrinter.PrintRow(inMemoryBad);
 ConsoleReportPrinter.PrintRow(inMemoryGood);
 ConsoleReportPrinter.PrintSummary(inMemoryBad, inMemoryGood);
@@ -36,3 +37,4 @@ ConsoleReportPrinter.PrintRow(sqliteGood);
 ConsoleReportPrinter.PrintSummary(sqliteBad, sqliteGood);
 
 ConsoleReportPrinter.WaitForExit();
+
