@@ -1,6 +1,7 @@
 ﻿using DotnetPlayground.Common.ConsoleUI;
 using DotnetPlayground.Common.ConsoleUI.Reports;
 using DeferredExecutionMaterialization.Console.Configuration;
+using DeferredExecutionMaterialization.Core.Diagnostics;
 using DeferredExecutionMaterialization.Core.Models;
 using DeferredExecutionMaterialization.Core.Services;
 using DeferredExecutionMaterialization.Infrastructure.DataSources;
@@ -11,27 +12,12 @@ const RunMode mode = RunMode.Stress;
 
 var (totalRecords, inMemoryDelayMs) = RunConfiguration.GetConfig(mode);
 
-// InMemory
-var inMemoryDataSource = new MaterializationDataAccessSimulator(totalRecords, inMemoryDelayMs);
-var inMemoryRunner = new ScenarioRunner(inMemoryDataSource);
-
-var inMemoryBad = inMemoryRunner.RunBad();
-var inMemoryGood = inMemoryRunner.RunGood();
-
 ConsoleShell.PrintHeader("Comparacao de materializacao precoce (ToList) e execucao tardia, avaliando custo invisivel no acesso a dados.");
 
-ConsoleReportPrinter.PrintHeader($"==== INMEMORY (delay {inMemoryDelayMs}ms) - Materializacao e Execucao Tardia");
-
-static ConsoleScenarioRunResult Map(dynamic r) => new()
-{
-    ScenarioName = r.ScenarioName,
-    TotalRecords = r.TotalRecords,
-    ElapsedTicks = r.ElapsedTicks
-};
-
-ConsoleReportPrinter.PrintRow(Map(inMemoryBad));
-ConsoleReportPrinter.PrintRow(Map(inMemoryGood));
-ConsoleReportPrinter.PrintSummary(Map(inMemoryBad), Map(inMemoryGood));
+RunAndPrint(
+    title: $"==== INMEMORY (delay {inMemoryDelayMs}ms) - Materializacao e Execucao Tardia",
+    runner: new ScenarioRunner(new MaterializationDataAccessSimulator(totalRecords, inMemoryDelayMs))
+);
 
 System.Console.WriteLine();
 
@@ -39,42 +25,28 @@ System.Console.WriteLine();
 var dbPath = SqliteDatabaseFactory.GetDatabasePath("deferred-execution-materialization.db");
 SqliteDatabaseFactory.EnsureDatabaseCreated(dbPath, totalRecords, activeRate: 0.25);
 
-var sqliteDataSource = new SqliteMaterializationDataSource(dbPath, totalRecords);
-var sqliteRunner = new ScenarioRunner(sqliteDataSource);
-
-var sqliteBad = sqliteRunner.RunBad();
-var sqliteGood = sqliteRunner.RunGood();
-
-ConsoleReportPrinter.PrintHeader("==== SQLITE (DAPPER) - Materializacao e Execucao Tardia");
-
-ConsoleReportPrinter.PrintRow(new ConsoleScenarioRunResult
-{
-    ScenarioName = sqliteBad.ScenarioName,
-    TotalRecords = sqliteBad.TotalRecords,
-    ElapsedTicks = sqliteBad.ElapsedTicks
-});
-
-ConsoleReportPrinter.PrintRow(new ConsoleScenarioRunResult
-{
-    ScenarioName = sqliteGood.ScenarioName,
-    TotalRecords = sqliteGood.TotalRecords,
-    ElapsedTicks = sqliteGood.ElapsedTicks
-});
-
-ConsoleReportPrinter.PrintSummary(
-    new ConsoleScenarioRunResult
-    {
-        ScenarioName = sqliteBad.ScenarioName,
-        TotalRecords = sqliteBad.TotalRecords,
-        ElapsedTicks = sqliteBad.ElapsedTicks
-    },
-    new ConsoleScenarioRunResult
-    {
-        ScenarioName = sqliteGood.ScenarioName,
-        TotalRecords = sqliteGood.TotalRecords,
-        ElapsedTicks = sqliteGood.ElapsedTicks
-    });
+RunAndPrint(
+    title: "==== SQLITE (DAPPER) - Materializacao e Execucao Tardia",
+    runner: new ScenarioRunner(new SqliteMaterializationDataSource(dbPath, totalRecords))
+);
 
 System.Console.WriteLine();
-
 ConsoleReportPrinter.WaitForExit();
+
+static void RunAndPrint(string title, ScenarioRunner runner)
+{
+    var bad = runner.RunBad();
+    var good = runner.RunGood();
+
+    ConsoleReportPrinter.PrintHeader(title);
+    ConsoleReportPrinter.PrintRow(Map(bad));
+    ConsoleReportPrinter.PrintRow(Map(good));
+    ConsoleReportPrinter.PrintSummary(Map(bad), Map(good));
+}
+
+static ConsoleScenarioRunResult Map(ScenarioRunResult r) => new()
+{
+    ScenarioName = r.ScenarioName,
+    TotalRecords = r.TotalRecords,
+    ElapsedTicks = r.ElapsedTicks
+};
