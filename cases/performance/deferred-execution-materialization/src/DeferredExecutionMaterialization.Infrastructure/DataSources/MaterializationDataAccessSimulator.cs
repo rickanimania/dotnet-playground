@@ -1,60 +1,99 @@
 ﻿using DeferredExecutionMaterialization.Core.Abstractions;
 
-namespace DeferredExecutionMaterialization.Infrastructure.InMemory.DataSources;
+namespace DeferredExecutionMaterialization.Infrastructure.DataSources;
 
 public sealed class MaterializationDataAccessSimulator : IMaterializationDataSource
 {
-    private readonly int _delayMs;
+    private readonly int _delayMsPerRecord;
+    private readonly List<FakeRecord> _records;
 
     public int TotalRecords { get; }
 
-    public MaterializationDataAccessSimulator(int totalRecords, int delayMs)
+    public int BadMaterializedRecords { get; private set; }
+    public int GoodMaterializedRecords { get; private set; }
+
+    public MaterializationDataAccessSimulator(int totalRecords, int delayMsPerRecord)
     {
         if (totalRecords <= 0)
             throw new ArgumentOutOfRangeException(nameof(totalRecords));
 
-        if (delayMs < 0)
-            throw new ArgumentOutOfRangeException(nameof(delayMs));
+        if (delayMsPerRecord < 0)
+            throw new ArgumentOutOfRangeException(nameof(delayMsPerRecord));
 
         TotalRecords = totalRecords;
-        _delayMs = delayMs;
+        _delayMsPerRecord = delayMsPerRecord;
+
+        // 25% ativos (simula filtro seletivo)
+        _records = BuildRecords(totalRecords, activeRate: 0.25);
     }
 
     public void ExecuteBad()
     {
-        // Simula "ToList cedo": você paga custo de buscar tudo
-        for (int i = 0; i < TotalRecords; i++)
-            SimulateDataAccessCost();
+        // Simula: SELECT * FROM tabela;  (materializa tudo)
+        var all = Materialize(_records);
+        BadMaterializedRecords = all.Count;
 
-        // Depois filtra/processa em memória (custo adicional)
-        for (int i = 0; i < TotalRecords; i++)
-            SimulateInMemoryCost();
+        // Depois filtra em memória
+        var filtered = all.Where(x => x.IsActive).ToList();
+
+        // E processa o subset
+        Process(filtered);
     }
 
     public void ExecuteGood()
     {
-        // Simula filtrar antes e materializar no final:
-        // você não “busca tudo”, trabalha com um subconjunto
-        var filtered = TotalRecords / 2;
+        // Simula: SELECT * FROM tabela WHERE IsActive = 1; (filtra "no servidor")
+        var serverFiltered = _records.Where(x => x.IsActive).ToList();
 
-        for (int i = 0; i < filtered; i++)
-            SimulateDataAccessCost();
+        // Materializa apenas o subset
+        var filtered = Materialize(serverFiltered);
+        GoodMaterializedRecords = filtered.Count;
 
-        // e processa menos em memória
-        for (int i = 0; i < filtered; i++)
-            SimulateInMemoryCost();
+        // Processa o subset
+        Process(filtered);
     }
 
-    private void SimulateDataAccessCost()
+    // ----------------- helpers -----------------
+
+    private List<FakeRecord> Materialize(List<FakeRecord> source)
     {
-        if (_delayMs > 0)
-            Thread.Sleep(_delayMs);
+        // custo por registro trafegado/materializado (rede + IO + parse)
+        if (_delayMsPerRecord > 0)
+        {
+            // Evita Sleep em loop muito grande no Stress; mas no Demo é ok.
+            // Como você tem Stress com delay 0, fica safe.
+            foreach (var _ in source)
+                Thread.Sleep(_delayMsPerRecord);
+        }
+
+        // Retorna cópia para simular materialização (novo objeto/lista)
+        return source.Select(r => new FakeRecord(r.Id, r.IsActive)).ToList();
     }
 
-    private static void SimulateInMemoryCost()
+    private static void Process(List<FakeRecord> records)
     {
-        // Custo mínimo só para diferenciar fluxo.
-        // Não coloque Sleep aqui, para não mascarar o custo de "buscar dados".
-        _ = Guid.NewGuid();
+        // custo de CPU/mem: simula transformação/validação
+        // leve, mas proporcional ao volume
+        long checksum = 0;
+        foreach (var r in records)
+            checksum += r.Id;
+
+        _ = checksum;
     }
+
+    private static List<FakeRecord> BuildRecords(int total, double activeRate)
+    {
+        var list = new List<FakeRecord>(total);
+        var activeEvery = Math.Max((int)Math.Round(1 / activeRate), 1);
+
+        for (int i = 1; i <= total; i++)
+        {
+            var isActive = (i % activeEvery) == 0;
+            list.Add(new FakeRecord(i, isActive));
+        }
+
+        return list;
+    }
+
+    private sealed record FakeRecord(int Id, bool IsActive);
 }

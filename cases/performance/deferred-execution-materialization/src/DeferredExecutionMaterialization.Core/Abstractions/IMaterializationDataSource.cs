@@ -4,13 +4,9 @@ public interface IMaterializationDataSource
 {
     int TotalRecords { get; }
 
-    /// <summary>
-    /// Simula um fluxo onde o desenvolvedor materializa cedo (ToList) e depois filtra/processa em memória.
-    /// </summary>
-    void ExecuteBad();
+    int BadMaterializedRecords { get; }
+    int GoodMaterializedRecords { get; }
 
-    /// <summary>
-    /// Simula um fluxo onde o desenvolvedor filtra antes e só materializa no final.
-    /// </summary>
+    void ExecuteBad();
     void ExecuteGood();
 }

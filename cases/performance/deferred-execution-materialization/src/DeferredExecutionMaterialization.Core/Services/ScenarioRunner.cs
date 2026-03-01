@@ -21,8 +21,8 @@ public sealed class ScenarioRunner
 
         return new ScenarioRunResult
         {
-            ScenarioName = "Bad",
-            TotalRecords = _dataSource.TotalRecords,
+            ScenarioName = "Bad(ToList)",
+            TotalRecords = _dataSource.BadMaterializedRecords,
             ElapsedTicks = sw.ElapsedTicks
         };
     }
@@ -35,8 +35,8 @@ public sealed class ScenarioRunner
 
         return new ScenarioRunResult
         {
-            ScenarioName = "Good",
-            TotalRecords = _dataSource.TotalRecords,
+            ScenarioName = "Good(Filter)",
+            TotalRecords = _dataSource.GoodMaterializedRecords,
             ElapsedTicks = sw.ElapsedTicks
         };
     }

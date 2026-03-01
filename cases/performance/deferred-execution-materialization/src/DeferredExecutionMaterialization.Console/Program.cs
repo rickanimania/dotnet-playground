@@ -3,7 +3,7 @@ using DotnetPlayground.Common.ConsoleUI.Reports;
 using DeferredExecutionMaterialization.Console.Configuration;
 using DeferredExecutionMaterialization.Core.Models;
 using DeferredExecutionMaterialization.Core.Services;
-using DeferredExecutionMaterialization.Infrastructure.InMemory.DataSources;
+using DeferredExecutionMaterialization.Infrastructure.DataSources;
 
 const RunMode mode = RunMode.Demo;
 
