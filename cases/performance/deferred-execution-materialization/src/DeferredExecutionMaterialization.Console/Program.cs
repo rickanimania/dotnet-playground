@@ -33,6 +33,8 @@ ConsoleReportPrinter.PrintRow(Map(inMemoryBad));
 ConsoleReportPrinter.PrintRow(Map(inMemoryGood));
 ConsoleReportPrinter.PrintSummary(Map(inMemoryBad), Map(inMemoryGood));
 
+System.Console.WriteLine();
+
 // SQLite
 var dbPath = SqliteDatabaseFactory.GetDatabasePath("deferred-execution-materialization.db");
 SqliteDatabaseFactory.EnsureDatabaseCreated(dbPath, totalRecords, activeRate: 0.25);
