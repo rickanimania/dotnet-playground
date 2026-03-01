@@ -4,8 +4,10 @@ using DeferredExecutionMaterialization.Console.Configuration;
 using DeferredExecutionMaterialization.Core.Models;
 using DeferredExecutionMaterialization.Core.Services;
 using DeferredExecutionMaterialization.Infrastructure.DataSources;
+using DeferredExecutionMaterialization.Infrastructure.Sqlite.Database;
+using DeferredExecutionMaterialization.Infrastructure.Sqlite.DataSources;
 
-const RunMode mode = RunMode.Demo;
+const RunMode mode = RunMode.Stress;
 
 var (totalRecords, inMemoryDelayMs) = RunConfiguration.GetConfig(mode);
 
@@ -30,6 +32,46 @@ static ConsoleScenarioRunResult Map(dynamic r) => new()
 ConsoleReportPrinter.PrintRow(Map(inMemoryBad));
 ConsoleReportPrinter.PrintRow(Map(inMemoryGood));
 ConsoleReportPrinter.PrintSummary(Map(inMemoryBad), Map(inMemoryGood));
+
+// SQLite
+var dbPath = SqliteDatabaseFactory.GetDatabasePath("deferred-execution-materialization.db");
+SqliteDatabaseFactory.EnsureDatabaseCreated(dbPath, totalRecords, activeRate: 0.25);
+
+var sqliteDataSource = new SqliteMaterializationDataSource(dbPath, totalRecords);
+var sqliteRunner = new ScenarioRunner(sqliteDataSource);
+
+var sqliteBad = sqliteRunner.RunBad();
+var sqliteGood = sqliteRunner.RunGood();
+
+ConsoleReportPrinter.PrintHeader("==== SQLITE (DAPPER) - Materializacao e Execucao Tardia");
+
+ConsoleReportPrinter.PrintRow(new ConsoleScenarioRunResult
+{
+    ScenarioName = sqliteBad.ScenarioName,
+    TotalRecords = sqliteBad.TotalRecords,
+    ElapsedTicks = sqliteBad.ElapsedTicks
+});
+
+ConsoleReportPrinter.PrintRow(new ConsoleScenarioRunResult
+{
+    ScenarioName = sqliteGood.ScenarioName,
+    TotalRecords = sqliteGood.TotalRecords,
+    ElapsedTicks = sqliteGood.ElapsedTicks
+});
+
+ConsoleReportPrinter.PrintSummary(
+    new ConsoleScenarioRunResult
+    {
+        ScenarioName = sqliteBad.ScenarioName,
+        TotalRecords = sqliteBad.TotalRecords,
+        ElapsedTicks = sqliteBad.ElapsedTicks
+    },
+    new ConsoleScenarioRunResult
+    {
+        ScenarioName = sqliteGood.ScenarioName,
+        TotalRecords = sqliteGood.TotalRecords,
+        ElapsedTicks = sqliteGood.ElapsedTicks
+    });
 
 System.Console.WriteLine();
 
