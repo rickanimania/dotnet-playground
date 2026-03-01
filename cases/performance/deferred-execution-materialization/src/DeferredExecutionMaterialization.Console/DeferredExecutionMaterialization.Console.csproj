@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\shared\common\DotnetPlayground.Common\DotnetPlayground.Common.csproj" />
     <ProjectReference Include="..\DeferredExecutionMaterialization.Core\DeferredExecutionMaterialization.Core.csproj" />
     <ProjectReference Include="..\DeferredExecutionMaterialization.Infrastructure\DeferredExecutionMaterialization.Infrastructure.csproj" />
   </ItemGroup>
