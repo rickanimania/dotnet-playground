@@ -1,73 +1,47 @@
-﻿using DotnetPlayground.Common.ConsoleUI.Reports;
+﻿using DotnetPlayground.Common.ConsoleUI;
+using DotnetPlayground.Common.ConsoleUI.Reports;
+using NPlusOneRoundTrips.Console.Configuration;
+using NPlusOneRoundTrips.Core.Diagnostics;
 using NPlusOneRoundTrips.Core.Services;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.Database;
 using NPlusOneRoundTrips.Infrastructure.Sqlite.DataSources;
-using NPlusOneRoundTrips.Console.Configuration;
-using DotnetPlayground.Common.ConsoleUI;
-
 
 const RunMode mode = RunMode.Demo;
 
 var (totalRecords, inMemoryDelayMs) = RunConfiguration.GetConfig(mode);
 
-// InMemory
-var inMemoryDataSource = new DataAccessSimulator(totalRecords, inMemoryDelayMs);
-var inMemoryRunner = new ScenarioRunner(inMemoryDataSource);
-
-var inMemoryBad = inMemoryRunner.RunBad();
-var inMemoryGood = inMemoryRunner.RunGood();
-
 ConsoleShell.PrintHeader("Comparacao de N+1 e round-trips utilizando simulacao em memoria e SQLite com Dapper.");
 
-ConsoleReportPrinter.PrintHeader($"==== INMEMORY (delay {inMemoryDelayMs}ms) - N+1 e Round Trips");
-
-var inMemoryBadRow = new ConsoleScenarioRunResult
-{
-    ScenarioName = inMemoryBad.ScenarioName,
-    TotalRecords = inMemoryBad.TotalRecords,
-    ElapsedTicks = inMemoryBad.ElapsedTicks
-};
-
-var inMemoryGoodRow = new ConsoleScenarioRunResult
-{
-    ScenarioName = inMemoryGood.ScenarioName,
-    TotalRecords = inMemoryGood.TotalRecords,
-    ElapsedTicks = inMemoryGood.ElapsedTicks
-};
-
-ConsoleReportPrinter.PrintRow(inMemoryBadRow);
-ConsoleReportPrinter.PrintRow(inMemoryGoodRow);
-ConsoleReportPrinter.PrintSummary(inMemoryBadRow, inMemoryGoodRow);
+RunAndPrint(
+    title: $"==== INMEMORY (delay {inMemoryDelayMs}ms) - N+1 e Round Trips",
+    runner: new ScenarioRunner(new DataAccessSimulator(totalRecords, inMemoryDelayMs))
+);
 
 System.Console.WriteLine();
 
-// SQLite
-var dbPath = SqliteDatabaseFactory.GetDatabasePath("nplusone-roundtrips.db");
-var sqliteDataSource = new SqliteRecordDataSource(dbPath, totalRecords);
-var sqliteRunner = new ScenarioRunner(sqliteDataSource);
-
-var sqliteBad = sqliteRunner.RunBad();
-var sqliteGood = sqliteRunner.RunGood();
-
-ConsoleReportPrinter.PrintHeader("==== SQLITE (DAPPER) - N+1 e Round Trips");
-
-var sqliteBadRow = new ConsoleScenarioRunResult
-{
-    ScenarioName = sqliteBad.ScenarioName,
-    TotalRecords = sqliteBad.TotalRecords,
-    ElapsedTicks = sqliteBad.ElapsedTicks
-};
-
-var sqliteGoodRow = new ConsoleScenarioRunResult
-{
-    ScenarioName = sqliteGood.ScenarioName,
-    TotalRecords = sqliteGood.TotalRecords,
-    ElapsedTicks = sqliteGood.ElapsedTicks
-};
-
-ConsoleReportPrinter.PrintRow(sqliteBadRow);
-ConsoleReportPrinter.PrintRow(sqliteGoodRow);
-ConsoleReportPrinter.PrintSummary(sqliteBadRow, sqliteGoodRow);
+RunAndPrint(
+    title: "==== SQLITE (DAPPER) - N+1 e Round Trips",
+    runner: new ScenarioRunner(new SqliteRecordDataSource(
+        SqliteDatabaseFactory.GetDatabasePath("nplusone-roundtrips.db"),
+        totalRecords))
+);
 
 ConsoleReportPrinter.WaitForExit();
 
+static void RunAndPrint(string title, ScenarioRunner runner)
+{
+    var bad = runner.RunBad();
+    var good = runner.RunGood();
+
+    ConsoleReportPrinter.PrintHeader(title);
+    ConsoleReportPrinter.PrintRow(Map(bad));
+    ConsoleReportPrinter.PrintRow(Map(good));
+    ConsoleReportPrinter.PrintSummary(Map(bad), Map(good));
+}
+
+static ConsoleScenarioRunResult Map(ScenarioRunResult r) => new()
+{
+    ScenarioName = r.ScenarioName,
+    TotalRecords = r.TotalRecords,
+    ElapsedTicks = r.ElapsedTicks
+};
