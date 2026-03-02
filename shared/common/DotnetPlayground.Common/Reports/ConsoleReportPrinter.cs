@@ -21,6 +21,28 @@ public static class ConsoleReportPrinter
         System.Console.WriteLine("|----------------|-----------|-----------|");
     }
 
+    public static void PrintHeaderWithDataset(string title)
+    {
+        System.Console.WriteLine(title);
+        System.Console.WriteLine();
+        System.Console.WriteLine("|----------------|-----------|-----------|-----------|");
+        System.Console.WriteLine("| CENARIO        | DATASET   | AVALIADOS | TEMPO (MS)|");
+        System.Console.WriteLine("|----------------|-----------|-----------|-----------|");
+    }
+
+    public static void PrintRowWithDataset(ConsoleScenarioRunResult result)
+    {
+        var ms = ToMilliseconds(result.ElapsedTicks);
+
+        var dataset = result.DatasetRecords ?? result.TotalRecords;
+
+        var evaluatedText = result.EvaluatedRecords.HasValue ? result.EvaluatedRecords.Value.ToString() : "N/A";
+
+        System.Console.WriteLine($"| {result.ScenarioName,-14} | {dataset,9} | {evaluatedText,9} | {ms,9:0.00} |");
+
+        System.Console.WriteLine("|----------------|-----------|-----------|-----------|");
+    }
+
     public static void PrintSummary(ConsoleScenarioRunResult bad, ConsoleScenarioRunResult good)
     {
         System.Console.WriteLine();
