@@ -20,7 +20,9 @@ RunAndPrint(
     runner: new ScenarioRunner(
         dataSource: new AnyVsCountDataAccessSimulator(config.TotalRecords, config.MatchIndex, config.WorkFactor),
         useEvaluatedRecordsAsTotal: true
-    )
+    ),
+    datasetRecords: config.TotalRecords,
+    showEvaluatedAsTotal: true
 );
 System.Console.WriteLine();
 
@@ -32,28 +34,43 @@ RunAndPrint(
     title: $"==== SQLITE (DAPPER) - Any() vs Count() | Mode: {mode}",
     runner: new ScenarioRunner(
         dataSource: new SqliteAnyVsCountDataSource(dbPath, config.TotalRecords),
-        useEvaluatedRecordsAsTotal: false
-    )
+        useEvaluatedRecordsAsTotal: true
+    ),
+    datasetRecords: config.TotalRecords,
+    showEvaluatedAsTotal: false
 );
 
 System.Console.WriteLine();
 
 ConsoleReportPrinter.WaitForExit();
 
-static void RunAndPrint(string title, ScenarioRunner runner)
+static void RunAndPrint(string title, ScenarioRunner runner, int datasetRecords, bool showEvaluatedAsTotal)
 {
     var bad = runner.RunBad();
     var good = runner.RunGood();
 
-    ConsoleReportPrinter.PrintHeader(title);
-    ConsoleReportPrinter.PrintRow(Map(bad));
-    ConsoleReportPrinter.PrintRow(Map(good));
-    ConsoleReportPrinter.PrintSummary(Map(bad), Map(good));
+    ConsoleReportPrinter.PrintHeaderWithDataset(title);
+
+    ConsoleReportPrinter.PrintRowWithDataset(Map(bad, datasetRecords, showEvaluatedAsTotal));
+    ConsoleReportPrinter.PrintRowWithDataset(Map(good, datasetRecords, showEvaluatedAsTotal));
+
+    // Summary permanece igual
+    ConsoleReportPrinter.PrintSummary(
+        Map(bad, datasetRecords, showEvaluatedAsTotal),
+        Map(good, datasetRecords, showEvaluatedAsTotal)
+    );
 }
 
-static ConsoleScenarioRunResult Map(ScenarioRunResult r) => new()
+static ConsoleScenarioRunResult Map(ScenarioRunResult r, int datasetRecords, bool evaluatedIsTotal)
 {
-    ScenarioName = r.ScenarioName,
-    TotalRecords = r.TotalRecords,
-    ElapsedTicks = r.ElapsedTicks
-};
+    var evaluated = evaluatedIsTotal ? r.TotalRecords : (int?)null;
+
+    return new ConsoleScenarioRunResult
+    {
+        ScenarioName = r.ScenarioName,
+        TotalRecords = r.TotalRecords,
+        ElapsedTicks = r.ElapsedTicks,
+        DatasetRecords = datasetRecords,
+        EvaluatedRecords = evaluated
+    };
+}
