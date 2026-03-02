@@ -35,7 +35,14 @@ public static class SqliteDatabaseFactory
         cmd.CommandText = "SELECT COUNT(1) FROM Records;";
         var existing = Convert.ToInt32(cmd.ExecuteScalar());
 
-        if (existing == totalRecords)
+        cmd.CommandText = "SELECT COUNT(1) FROM Records WHERE IsMatch = 1;";
+        var matchCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+        cmd.CommandText = "SELECT Id FROM Records WHERE IsMatch = 1 LIMIT 1;";
+        var matchIdInDb = cmd.ExecuteScalar();
+        var matchIdOk = matchIdInDb is long id && id == matchId;
+
+        if (existing == totalRecords && matchCount == 1 && matchIdOk)
             return;
 
         // Recria determinístico

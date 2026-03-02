@@ -8,6 +8,8 @@ using AnyVsCount.Infrastructure.DataSources;
 using AnyVsCount.Infrastructure.Sqlite.Database;
 using AnyVsCount.Infrastructure.Sqlite.DataSources;
 
+SQLitePCL.Batteries.Init();
+
 const RunMode mode = RunMode.Stress;
 
 var config = RunConfiguration.GetConfig(mode);
@@ -22,8 +24,9 @@ RunAndPrint(
         useEvaluatedRecordsAsTotal: true
     ),
     datasetRecords: config.TotalRecords,
-    showEvaluatedAsTotal: true
+    evaluatedIsTotal: true
 );
+
 System.Console.WriteLine();
 
 // SQLite
@@ -34,43 +37,35 @@ RunAndPrint(
     title: $"==== SQLITE (DAPPER) - Any() vs Count() | Mode: {mode}",
     runner: new ScenarioRunner(
         dataSource: new SqliteAnyVsCountDataSource(dbPath, config.TotalRecords),
-        useEvaluatedRecordsAsTotal: true
+        useEvaluatedRecordsAsTotal: false
     ),
     datasetRecords: config.TotalRecords,
-    showEvaluatedAsTotal: false
+    evaluatedIsTotal: false
 );
 
 System.Console.WriteLine();
-
 ConsoleReportPrinter.WaitForExit();
 
-static void RunAndPrint(string title, ScenarioRunner runner, int datasetRecords, bool showEvaluatedAsTotal)
+static void RunAndPrint(string title, ScenarioRunner runner, int datasetRecords, bool evaluatedIsTotal)
 {
     var bad = runner.RunBad();
     var good = runner.RunGood();
 
     ConsoleReportPrinter.PrintHeaderWithDataset(title);
 
-    ConsoleReportPrinter.PrintRowWithDataset(Map(bad, datasetRecords, showEvaluatedAsTotal));
-    ConsoleReportPrinter.PrintRowWithDataset(Map(good, datasetRecords, showEvaluatedAsTotal));
+    var badMapped = Map(bad, datasetRecords, evaluatedIsTotal);
+    var goodMapped = Map(good, datasetRecords, evaluatedIsTotal);
 
-    // Summary permanece igual
-    ConsoleReportPrinter.PrintSummary(
-        Map(bad, datasetRecords, showEvaluatedAsTotal),
-        Map(good, datasetRecords, showEvaluatedAsTotal)
-    );
+    ConsoleReportPrinter.PrintRowWithDataset(badMapped);
+    ConsoleReportPrinter.PrintRowWithDataset(goodMapped);
+    ConsoleReportPrinter.PrintSummary(badMapped, goodMapped);
 }
 
-static ConsoleScenarioRunResult Map(ScenarioRunResult r, int datasetRecords, bool evaluatedIsTotal)
+static ConsoleScenarioRunResult Map(ScenarioRunResult r, int datasetRecords, bool evaluatedIsTotal) => new()
 {
-    var evaluated = evaluatedIsTotal ? r.TotalRecords : (int?)null;
-
-    return new ConsoleScenarioRunResult
-    {
-        ScenarioName = r.ScenarioName,
-        TotalRecords = r.TotalRecords,
-        ElapsedTicks = r.ElapsedTicks,
-        DatasetRecords = datasetRecords,
-        EvaluatedRecords = evaluated
-    };
-}
+    ScenarioName = r.ScenarioName,
+    TotalRecords = r.TotalRecords,
+    ElapsedTicks = r.ElapsedTicks,
+    DatasetRecords = datasetRecords,
+    EvaluatedRecords = evaluatedIsTotal ? r.TotalRecords : null
+};
