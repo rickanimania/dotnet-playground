@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetPlayground.Common", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "n-plus-one-round-trips", "n-plus-one-round-trips", "{6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "case1-n-plus-one-round-trips", "case1-n-plus-one-round-trips", "{6B9239B4-2F2E-4EAE-B04A-5BE9B32D7890}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Core", "cases\performance\n-plus-one-round-trips\src\NPlusOneRoundTrips.Core\NPlusOneRoundTrips.Core.csproj", "{11E72AF9-EF87-4647-8596-81B6A2C2C079}"
 EndProject
@@ -15,13 +15,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Console"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlusOneRoundTrips.Infrastructure.Sqlite", "cases\performance\n-plus-one-round-trips\src\NPlusOneRoundTrips.Infrastructure.Sqlite\NPlusOneRoundTrips.Infrastructure.Sqlite.csproj", "{C81ECF48-3AE8-446F-AB97-815651C3D848}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deferred-execution-materialization", "deferred-execution-materialization", "{25C99686-F5E5-4C4D-A83B-4201F6E6A53D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "case2-deferred-execution-materialization", "case2-deferred-execution-materialization", "{25C99686-F5E5-4C4D-A83B-4201F6E6A53D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeferredExecutionMaterialization.Core", "cases\performance\deferred-execution-materialization\src\DeferredExecutionMaterialization.Core\DeferredExecutionMaterialization.Core.csproj", "{3AD79CB1-6FB8-4261-BC35-317F1A84E12F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeferredExecutionMaterialization.Infrastructure", "cases\performance\deferred-execution-materialization\src\DeferredExecutionMaterialization.Infrastructure\DeferredExecutionMaterialization.Infrastructure.csproj", "{DF5557DA-16C9-48D3-B2D5-5A1603B3511A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeferredExecutionMaterialization.Console", "cases\performance\deferred-execution-materialization\src\DeferredExecutionMaterialization.Console\DeferredExecutionMaterialization.Console.csproj", "{13EC4C9F-8ED7-48E9-9550-45F576446158}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "case3-any-vs-count", "case3-any-vs-count", "{AB8BA5D3-D54D-4961-9A32-72DB4BD703EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyVsCount.Core", "cases\performance\any-vs-count\src\AnyVsCount.Core\AnyVsCount.Core.csproj", "{F7455AFF-7B70-4DED-8DD6-6736B7AE7073}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyVsCount.Infrastructure", "cases\performance\any-vs-count\src\AnyVsCount.Infrastructure\AnyVsCount.Infrastructure.csproj", "{21750F91-C1B5-447C-9BB3-40D4B9E1A006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyVsCount.Console", "cases\performance\any-vs-count\src\AnyVsCount.Console\AnyVsCount.Console.csproj", "{EFB046DC-D319-4912-86EB-BA127C93A594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +65,18 @@ Global
 		{13EC4C9F-8ED7-48E9-9550-45F576446158}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13EC4C9F-8ED7-48E9-9550-45F576446158}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13EC4C9F-8ED7-48E9-9550-45F576446158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7455AFF-7B70-4DED-8DD6-6736B7AE7073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7455AFF-7B70-4DED-8DD6-6736B7AE7073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7455AFF-7B70-4DED-8DD6-6736B7AE7073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7455AFF-7B70-4DED-8DD6-6736B7AE7073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21750F91-C1B5-447C-9BB3-40D4B9E1A006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21750F91-C1B5-447C-9BB3-40D4B9E1A006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21750F91-C1B5-447C-9BB3-40D4B9E1A006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21750F91-C1B5-447C-9BB3-40D4B9E1A006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB046DC-D319-4912-86EB-BA127C93A594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB046DC-D319-4912-86EB-BA127C93A594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB046DC-D319-4912-86EB-BA127C93A594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB046DC-D319-4912-86EB-BA127C93A594}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +90,10 @@ Global
 		{3AD79CB1-6FB8-4261-BC35-317F1A84E12F} = {25C99686-F5E5-4C4D-A83B-4201F6E6A53D}
 		{DF5557DA-16C9-48D3-B2D5-5A1603B3511A} = {25C99686-F5E5-4C4D-A83B-4201F6E6A53D}
 		{13EC4C9F-8ED7-48E9-9550-45F576446158} = {25C99686-F5E5-4C4D-A83B-4201F6E6A53D}
+		{AB8BA5D3-D54D-4961-9A32-72DB4BD703EA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{F7455AFF-7B70-4DED-8DD6-6736B7AE7073} = {AB8BA5D3-D54D-4961-9A32-72DB4BD703EA}
+		{21750F91-C1B5-447C-9BB3-40D4B9E1A006} = {AB8BA5D3-D54D-4961-9A32-72DB4BD703EA}
+		{EFB046DC-D319-4912-86EB-BA127C93A594} = {AB8BA5D3-D54D-4961-9A32-72DB4BD703EA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0959BE1-0128-48E5-864F-42529A1AA4DE}
