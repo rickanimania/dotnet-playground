@@ -1,0 +1,6 @@
+@LayeredApiTemplate.Api_HostAddress = http://localhost:5140
+
+GET {{LayeredApiTemplate.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
