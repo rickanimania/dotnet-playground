@@ -4,14 +4,14 @@ dotnet-playground é um laboratório técnico público com casos reais,
 controlados e reproduzíveis no ecossistema .NET.
 
 O objetivo deste projeto é transformar conceitos discutidos em conteúdos
-técnicos (especialmente sobre backend e performance) em exemplos
-práticos, executáveis e organizados.
+técnicos (especialmente sobre backend, arquitetura e performance) em
+exemplos práticos, executáveis e organizados.
 
 Aqui você encontrará estudos aplicados sobre:
 
 -   Performance
 -   Acesso a dados
--   Arquitetura
+-   Arquitetura de software
 -   Observabilidade
 -   Organização de código
 -   Comparação entre abordagens inadequadas e otimizadas
@@ -40,25 +40,29 @@ Cada caso busca responder três perguntas:
 
 ## Estrutura do Projeto
 
-O projeto está organizado por categorias dentro da pasta `cases/`:
+O projeto está organizado por categorias dentro da pasta `cases/`.
+
+### Categorias principais
 
 -   `performance/` → Estudos sobre otimização, N+1, round-trips,
     materialização precoce, latência e impacto de consultas mal
     estruturadas.
+
 -   `data-access/` → Padrões e boas práticas com Dapper, EF Core e
     consultas SQL.
--   `architecture/` → Estruturação de projetos, separação de
-    responsabilidades e organização de camadas.
+
+-   `architecture/` → Estruturação de APIs, separação de
+    responsabilidades, organização de camadas e decisões arquiteturais.
+
 -   `observability/` → Logging estruturado, diagnósticos e
     rastreabilidade.
 
-Pastas complementares:
+### Pastas complementares
 
--   `shared/` → Código reutilizável entre casos (ex: ConsoleShell e
-    ConsoleReportPrinter).
--   `documentation/` → Decisões técnicas e material de apoio.
--   `tools/` → Scripts auxiliares.
--   `samples/` → Exemplos menores e experimentais.
+-   `shared/` → Código reutilizável entre casos
+-   `documentation/` → Decisões técnicas e material de apoio
+-   `tools/` → Scripts auxiliares
+-   `samples/` → Exemplos menores e experimentais
 
 ------------------------------------------------------------------------
 
@@ -95,12 +99,47 @@ diferenças significativas de desempenho conforme o volume cresce.
 
 ------------------------------------------------------------------------
 
+### architecture / layered-api-template
+
+Primeiro caso publicado na categoria de arquitetura.
+
+Este exemplo demonstra uma estrutura simples de API organizada em
+camadas, com foco em separação clara de responsabilidades e baixo
+acoplamento.
+
+A solução foi estruturada em quatro projetos:
+
+-   Api
+-   Application
+-   Domain
+-   Infrastructure
+
+Cada camada possui uma responsabilidade específica e segue regras de
+dependência que evitam acoplamento indevido entre os projetos.
+
+Para manter o exemplo simples e focado apenas na arquitetura:
+
+-   Não foi utilizado banco de dados
+-   Foi implementado um repositório em memória
+-   Foram criados endpoints mínimos apenas para demonstrar o fluxo da
+    aplicação
+
+Endpoints implementados:
+
+-   `GET /api/examples`
+-   `GET /api/health`
+
+O objetivo deste case é servir como referência simples de organização de
+uma API utilizando arquitetura em camadas.
+
+------------------------------------------------------------------------
+
 ## Arquitetura dos Casos
 
-Cada caso segue um padrão consistente:
+Cada caso segue um padrão consistente de organização:
 
 -   Core → Regra de negócio, contratos e cenários
--   Infrastructure → Implementações (InMemory, SQLite, etc.)
+-   Infrastructure → Implementações técnicas (InMemory, SQLite, etc.)
 -   Console ou API → Aplicação executável para reproduzir o experimento
 -   Shared/Common → Componentes reutilizáveis entre casos
 
@@ -129,6 +168,9 @@ ou
 dotnet run --project src/DeferredExecutionMaterialization.Console
 ```
 
+Para casos baseados em API, basta executar o projeto correspondente e
+utilizar o Swagger ou realizar chamadas HTTP diretamente nos endpoints.
+
 Os detalhes específicos de execução estão documentados no README de cada
 caso.
 
@@ -142,14 +184,16 @@ Versão 1.0.0:
 -   Organização por categorias
 -   Case 1: N+1 e Round Trips
 -   Case 2: Deferred Execution e Materialização
+-   Case 3: Estrutura de API em camadas
 -   Documentação padrão definida
 
 Próximos passos previstos:
 
 -   Novos casos em performance
--   Casos voltados a arquitetura
--   Estudos sobre paralelismo e concorrência
--   Casos sobre UX de terminal (CLI)
+-   Estudos sobre concorrência e paralelismo
+-   Casos sobre arquitetura backend
+-   Experimentos com otimização de acesso a dados
+-   Casos voltados para observabilidade
 
 ------------------------------------------------------------------------
 
@@ -157,10 +201,10 @@ Próximos passos previstos:
 
 Este projeto está alinhado aos conteúdos técnicos que compartilho no
 LinkedIn, com foco em desenvolvimento backend profissional, análise de
-gargalos e boas práticas aplicadas.
+gargalos, arquitetura de software e boas práticas aplicadas.
 
 O objetivo é manter um portfólio técnico evolutivo, transparente e
-baseado em problemas reais.
+baseado em problemas reais encontrados no desenvolvimento de sistemas.
 
 ------------------------------------------------------------------------
 
